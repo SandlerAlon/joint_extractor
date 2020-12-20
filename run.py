@@ -26,10 +26,21 @@ for video in videos.iterrows():
     print(os.getcwd())
     os.chdir('openpose/')
     print(os.getcwd())
-
     path_to_video = '../output/{}/{}.mp4'.format(video_id, video_title)
     path_to_output = '../output/{}'.format(video_id)
 
+
+
+    # record system info
+
+    # record time.time()
+    t_init = time.time()
+
+    # optional: cut video to 5 seconds
+    subprocess.run(['ffmpeg', '-y', '-loglevel', 'info', '-i', '{}'.format(path_to_video), '-t', '5', '{}'.format(path_to_video+'.mp4')])
+    path_to_video = path_to_video+'.mp4'
+
+    # extract joints.json
     subprocess.run(['./build/examples/openpose/openpose.bin',
                     '--video', '{}'.format(path_to_video),
                     '--write_json', '{}'.format(path_to_output),
@@ -40,19 +51,13 @@ for video in videos.iterrows():
                    shell=False
                    )
 
-
-
-    # record system info
-
-    # record time.time()
-    t_init = time.time()
-
-    # extract joints.json
-
     # record time.time()
     t_end = time.time()
+    os.chdir('..')
+    print(os.getcwd())
 
-    # keep log of time it tooke
+    # print log of time it took:
+    print('extracting joints for video {} took {:,.2f} minutes'.format(video_id, (t_end - t_init)/60))
 
     # stitch openpose/output/{video_id}/joints into {video_id}.json
 
