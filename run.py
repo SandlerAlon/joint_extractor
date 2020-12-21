@@ -2,6 +2,7 @@ import pandas as pd
 import pytube
 import os, time
 import subprocess
+from torch import cuda
 
 # read video list:
 videos = pd.read_csv('videos.csv', header=None)
@@ -56,7 +57,7 @@ for video in videos.iterrows():
     t_end = time.time()
     os.chdir('..')
     print(os.getcwd())
-    gpu_name = 0
+    gpu_name = cuda.get_device_name(0)
     process_length = (t_end - t_init)
 
     # print log of time it took:
