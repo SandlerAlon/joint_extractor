@@ -2,6 +2,7 @@ import pandas as pd
 import pytube
 import os, time
 import subprocess
+from torch import cuda
 
 # read video list:
 videos = pd.read_csv('videos.csv', header=None)
@@ -15,6 +16,7 @@ for video in videos.iterrows():
     youtube = pytube.YouTube(youtube_url)
     video = youtube.streams.get_highest_resolution()
     video_title = video.title.replace(" ", "_")
+    video_length = video._monostate.duration
     # donwload video.mp4 to output/{video_id} folder
     t0 = time.time()
     video.download('output/{}'.format(video_id), filename=video_title)
@@ -35,10 +37,10 @@ for video in videos.iterrows():
     # record time.time()
     t_init = time.time()
 
-    # optional: cut video to dt seconds
-    dt = 10
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'info', '-i', '{}'.format(path_to_video), '-t', '{}'.format(dt), '{}'.format(path_to_video+'.mp4')])
-    path_to_video = path_to_video+'.mp4'
+    # # optional: cut video to dt seconds
+    # dt = 10
+    # subprocess.run(['ffmpeg', '-y', '-loglevel', 'info', '-i', '{}'.format(path_to_video), '-t', '{}'.format(dt), '{}'.format(path_to_video+'.mp4')])
+    # path_to_video = path_to_video+'.mp4'
 
     # extract joints.json
     subprocess.run(['./build/examples/openpose/openpose.bin',
@@ -55,10 +57,12 @@ for video in videos.iterrows():
     t_end = time.time()
     os.chdir('..')
     print(os.getcwd())
+    gpu_name = cuda.get_device_name(0)
+    process_length = (t_end - t_init)
 
     # print log of time it took:
     print('extracting joints for video {} took {:,.2f} minutes'.format(video_id, (t_end - t_init)/60))
-
+    print('video {} length {}, took {} - {:,.2f} seconds to process'.format(video_id, video_length, gpu_name, process_length))
     # stitch openpose/output/{video_id}/joints into {video_id}.json
 
     # TODO: copy output to remote storage
