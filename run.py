@@ -17,6 +17,7 @@ for video in videos.iterrows():
     video = youtube.streams.get_highest_resolution()
     video_title = video.title.replace(" ", "_")
     video_length = video._monostate.duration
+    video_fps = video.fps
     # donwload video.mp4 to output/{video_id} folder
     t0 = time.time()
     video.download('output/{}'.format(video_id), filename=video_title)
@@ -28,7 +29,7 @@ for video in videos.iterrows():
     os.chdir('openpose/')
     print(os.getcwd())
     path_to_video = '../output/{}/{}.mp4'.format(video_id, video_title)
-    path_to_output = '../output/{}'.format(video_id)
+    path_to_output = '../output/{}'.format(video_id+'_fps_'+str(video_fps))
 
 
 
@@ -49,20 +50,20 @@ for video in videos.iterrows():
                     '--write_video', '{}/openpose.avi'.format(path_to_output),
                     '--display', '0',
                     '--hand',
-                    '--face'],
+                    '--face',
+                    '--keypoint_scale', '3'],
                    shell=False
                    )
 
     # record time.time()
     t_end = time.time()
-    os.chdir('..')
-    print(os.getcwd())
     gpu_name = cuda.get_device_name(0)
     process_length = (t_end - t_init)
 
     # print log of time it took:
     print('extracting joints for video {} took {:,.2f} minutes'.format(video_id, (t_end - t_init)/60))
     print('video {} length {}, took {} - {:,.2f} seconds to process'.format(video_id, video_length, gpu_name, process_length))
+
     # stitch openpose/output/{video_id}/joints into {video_id}.json
 
     # TODO: copy output to remote storage
