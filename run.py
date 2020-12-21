@@ -22,7 +22,6 @@ for video in videos.iterrows():
     print("downloaded video {}: \"{}\" - {:,.0f}s".format(video_id, video.title, t1-t0))
 
     # create folder openpose/output/{video_id}/joints
-
     print(os.getcwd())
     os.chdir('openpose/')
     print(os.getcwd())
@@ -36,8 +35,9 @@ for video in videos.iterrows():
     # record time.time()
     t_init = time.time()
 
-    # optional: cut video to 5 seconds
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'info', '-i', '{}'.format(path_to_video), '-t', '5', '{}'.format(path_to_video+'.mp4')])
+    # optional: cut video to dt seconds
+    dt = 10
+    subprocess.run(['ffmpeg', '-y', '-loglevel', 'info', '-i', '{}'.format(path_to_video), '-t', '{}'.format(dt), '{}'.format(path_to_video+'.mp4')])
     path_to_video = path_to_video+'.mp4'
 
     # extract joints.json
