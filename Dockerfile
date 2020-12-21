@@ -10,7 +10,7 @@ RUN apt-get install -y libatlas-base-dev libprotobuf-dev libleveldb-dev libsnapp
 RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y libopencv-dev
 
 # install python dependencies
-RUN pip3 install youtube-dl xcode pytube pandas nvidia_ml_py3 torch
+RUN pip3 install pandas youtube-dl xcode pytube nvidia_ml_py3 torch
 
 # working directory is /workspace
 RUN mkdir workspace && cd workspace/
@@ -33,8 +33,7 @@ RUN cd joint_extractor && git clone --depth 1 'https://github.com/CMU-Perceptual
 # RUN sed -i 's/execute_process(COMMAND git checkout master WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}\/3rdparty\/caffe)/execute_process(COMMAND git checkout f019d0dfe86f49d1140961f8c7dec22130c83154 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}\/3rdparty\/caffe)/g' openpose/CMakeLists.txt
 
 # build openpose
-# RUN cd openpose && rm -rf build || true && 
-# RUN mkdir build && cd build && cmake .. && make -j`nproc` && cd ..
+# RUN cd openpose && rm -rf build || true && mkdir build && cd build && cmake .. && make -j`nproc` && cd ..
 
 # copy current directory files:
 COPY . /workspace
